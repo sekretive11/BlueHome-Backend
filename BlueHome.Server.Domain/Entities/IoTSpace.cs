@@ -19,5 +19,18 @@ namespace BlueHome.Server.Domain.Entities
 
         public List<Device> Devices { get; set; } = new();
         public List<UserLog> UserLogs { get; set; } = new();
+
+        private IoTSpace() { }
+
+        public static IoTSpace Create(string name, string type)
+        {
+            return new IoTSpace
+            {
+                SpaceName = name,
+                SpaceType = type,
+                Status = SpaceStatus.active,
+                CreatedAt = DateTime.UtcNow
+            };
+        }
     }
 }

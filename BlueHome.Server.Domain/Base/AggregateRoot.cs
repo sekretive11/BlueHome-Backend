@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BlueHome.Server.Domain.Base
 {
-    public abstract class AggregateRoot : IHasDomainEvents
+    public abstract class AggregateRoot : Entity, IHasDomainEvents
     {
         private readonly List<IDomainEvent> _domainEvents = new();
 

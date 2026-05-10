@@ -1,8 +1,10 @@
 ﻿using BlueHome.Server.Application.Abstractions;
 using BlueHome.Server.Application.Abstractions.Persistence;
+using BlueHome.Server.Application.Spaces.Abstractions;
 using BlueHome.Server.Infrastructure.Bluetooth;
 using BlueHome.Server.Infrastructure.Bluetooth.Emulation;
 using BlueHome.Server.Infrastructure.Persistence;
+using BlueHome.Server.Infrastructure.Persistence.Repositories;
 using BlueHome.Server.Infrastructure.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -21,7 +23,8 @@ namespace BlueHome.Server.Infrastructure.DependencyInjection
 
             services.AddSingleton<DeviceSessionCache>();
             services.AddScoped<DeviceSessionFactory>();
-            services.AddSingleton<IDeviceRuntime, DeviceRuntime>();
+            services.AddScoped<IDeviceRuntime, DeviceRuntime>();
+            services.AddScoped<ISpaceRepository, SpaceRepository>();
 
             services.AddSingleton<IBluetoothGateway, LampBluetoothEmulator>();
             services.AddSingleton<IEventPublisher, BluetoothEventPublisher>();

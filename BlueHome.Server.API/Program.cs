@@ -1,7 +1,10 @@
 using BlueHome.Server.Application.Abstractions;
 using BlueHome.Server.Application.CommandHandlers;
+using BlueHome.Server.Application.Spaces.Abstractions;
+using BlueHome.Server.Application.Spaces.Commands;
 using BlueHome.Server.Infrastructure.DependencyInjection;
 using BlueHome.Server.Infrastructure.Persistence;
+using BlueHome.Server.Infrastructure.Persistence.Repositories;
 using BlueHome.Server.Infrastructure.Runtime;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +19,9 @@ builder.Services.AddInfrastructure();
 builder.Services.AddScoped<TurnLampOnHandler>();
 builder.Services.AddScoped<TurnLampOffHandler>();
 builder.Services.AddScoped<SetLampBrightnessHandler>();
-builder.Services.AddSingleton<IDeviceRuntime, DeviceRuntime>();
+builder.Services.AddScoped<IDeviceRuntime, DeviceRuntime>();
+builder.Services.AddScoped<ISpaceRepository, SpaceRepository>();
+builder.Services.AddScoped<CreateSpaceCommandHandler>();
 
 builder.Services.AddDbContext<BlueHomeDbContext>(options =>
     options.UseNpgsql(

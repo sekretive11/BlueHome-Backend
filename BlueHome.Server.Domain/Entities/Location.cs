@@ -12,5 +12,15 @@ namespace BlueHome.Server.Domain.Entities
         public string LocationName { get; set; } = null!;
 
         public List<Device> Devices { get; set; } = new();
+
+        private Location() { }
+
+        public static Location Create(string name)
+        {
+            return new Location
+            {
+                LocationName = name
+            };
+        }
     }
 }

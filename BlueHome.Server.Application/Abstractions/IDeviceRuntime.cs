@@ -11,6 +11,9 @@ namespace BlueHome.Server.Application.Abstractions
     public interface IDeviceRuntime
     {
         Device GetDevice(int id);
-        void Save(Device device);
+
+        Task Save(Device device);
+
+        IDeviceSession? GetSession(int id);
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlueHome.Server.Infrastructure.Runtime
+namespace BlueHome.Server.Application.Abstractions
 {
     public interface IDeviceSession
     {

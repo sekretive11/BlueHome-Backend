@@ -19,7 +19,10 @@ namespace BlueHome.Server.Infrastructure.Runtime
         public DeviceSession Create(int deviceId)
         {
             var device = _db.Devices
-                .First(d => d.DeviceId == deviceId);
+                .FirstOrDefault(d => d.DeviceId == deviceId);
+
+            if (device == null)
+                throw new Exception($"Device {deviceId} not found");
 
             return new DeviceSession(device);
         }

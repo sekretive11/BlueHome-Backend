@@ -1,4 +1,5 @@
 ﻿using BlueHome.Server.Domain.Entities;
+using BlueHome.Server.Application.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,13 @@ namespace BlueHome.Server.Infrastructure.Runtime
         public void MarkDirty()
         {
             IsDirty = true;
+        }
+
+        public void ApplyChanges(Device updated)
+        {
+            Device.DeviceName = updated.DeviceName;
+            Device.Status = updated.Status;
+            Device.DeviceType = updated.DeviceType;
         }
     }
 }

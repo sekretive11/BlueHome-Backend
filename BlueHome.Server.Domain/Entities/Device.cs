@@ -1,8 +1,9 @@
 ﻿using BlueHome.Server.Domain.Base;
-using BlueHome.Server.Domain.Events;
 using BlueHome.Server.Domain.Enums;
+using BlueHome.Server.Domain.Events;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace BlueHome.Server.Domain.Entities
         public DeviceStatus Status { get; set; }
         public string DeviceType { get; set; } = null!;
 
+        [NotMapped]
         public int? Brightness { get; private set; }
 
         public List<EventLog> EventLogs { get; set; } = new();

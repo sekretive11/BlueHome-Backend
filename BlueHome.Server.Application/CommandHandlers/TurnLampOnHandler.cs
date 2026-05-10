@@ -21,13 +21,13 @@ namespace BlueHome.Server.Application.CommandHandlers
             _eventPublisher = eventPublisher;
         }
 
-        public void Handle(TurnLampOnCommand command)
+        public async void Handle(TurnLampOnCommand command)
         {
             var device = _runtime.GetDevice(command.DeviceId);
 
             device.PowerOn();
 
-            _runtime.Save(device);
+            await _runtime.Save(device);
 
             _eventPublisher.Publish(device.DomainEvents);
             device.ClearDomainEvents();

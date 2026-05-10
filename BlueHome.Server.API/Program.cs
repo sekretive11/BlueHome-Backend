@@ -1,5 +1,7 @@
 using BlueHome.Server.Application.Abstractions;
 using BlueHome.Server.Application.CommandHandlers;
+using BlueHome.Server.Application.Devices.Commands;
+using BlueHome.Server.Application.Locations.Commands;
 using BlueHome.Server.Application.Spaces.Abstractions;
 using BlueHome.Server.Application.Spaces.Commands;
 using BlueHome.Server.Infrastructure.DependencyInjection;
@@ -22,6 +24,8 @@ builder.Services.AddScoped<SetLampBrightnessHandler>();
 builder.Services.AddScoped<IDeviceRuntime, DeviceRuntime>();
 builder.Services.AddScoped<ISpaceRepository, SpaceRepository>();
 builder.Services.AddScoped<CreateSpaceCommandHandler>();
+builder.Services.AddScoped<CreateLocationCommandHandler>();
+builder.Services.AddScoped<RegisterDeviceCommandHandler>();
 
 builder.Services.AddDbContext<BlueHomeDbContext>(options =>
     options.UseNpgsql(

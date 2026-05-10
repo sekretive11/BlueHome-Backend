@@ -2,6 +2,7 @@
 using BlueHome.Server.Application.Abstractions;
 using BlueHome.Server.Domain.Devices;
 using BlueHome.Server.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace BlueHome.Server.Infrastructure.Runtime
             return session.Device;
         }
 
-        public async void Save(Device device)
+        public async Task Save(Device device)
         {
             var session = GetOrCreate(device.DeviceId);
 
@@ -43,6 +44,13 @@ namespace BlueHome.Server.Infrastructure.Runtime
 
             _db.Devices.Update(device);
             await _db.SaveChangesAsync();
+        }
+
+        public IDeviceSession? GetSession(int id)
+        {
+            return _cache.TryGet(id, out var session)
+                ? session
+                : null;
         }
 
         private IDeviceSession GetOrCreate(int id)

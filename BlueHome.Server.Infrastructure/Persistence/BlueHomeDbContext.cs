@@ -22,6 +22,7 @@ namespace BlueHome.Server.Infrastructure.Persistence
         public DbSet<Device> Devices => Set<Device>();
         public DbSet<Location> Locations => Set<Location>();
         public DbSet<EventLog> EventLogs => Set<EventLog>();
+        public DbSet<UserLog> UserLogs => Set<UserLog>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

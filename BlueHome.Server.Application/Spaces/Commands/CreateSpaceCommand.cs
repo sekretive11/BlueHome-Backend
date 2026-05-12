@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace BlueHome.Server.Application.Spaces.Commands
 {
-    public sealed record CreateSpaceCommand(Guid UserId, string Name, string Type);
+    public sealed record CreateSpaceCommand(int UserId, string Name, string Type);
 }

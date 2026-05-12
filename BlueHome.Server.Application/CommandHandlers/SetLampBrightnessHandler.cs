@@ -1,4 +1,5 @@
 ﻿using BlueHome.Server.Application.Abstractions;
+using BlueHome.Server.Application.Abstractions.Auth;
 using BlueHome.Server.Application.Commands;
 using BlueHome.Server.Domain.Devices;
 using System;
@@ -12,25 +13,29 @@ namespace BlueHome.Server.Application.CommandHandlers
     public class SetLampBrightnessHandler
     {
         private readonly IDeviceRuntime _runtime;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly IDomainEventDispatcher _dispatcher;
+        private readonly ICurrentUserService _currentUser;
 
         public SetLampBrightnessHandler(
             IDeviceRuntime runtime,
-            IEventPublisher eventPublisher)
+            IDomainEventDispatcher dispatcher,
+            ICurrentUserService currentUser)
         {
             _runtime = runtime;
-            _eventPublisher = eventPublisher;
+            _dispatcher = dispatcher;
+            _currentUser = currentUser;
         }
 
-        public async void Handle(SetLampBrightnessCommand command)
+        public async Task Handle(SetLampBrightnessCommand command)
         {
             var device = _runtime.GetDevice(command.DeviceId);
+            var brightness = LampBrightness.From(command.Brightness);
 
-            device.SetBrightness(command.Brightness);
+            device.SetBrightness(brightness, _currentUser.UserId);
 
             await _runtime.Save(device);
 
-            _eventPublisher.Publish(device.DomainEvents);
+            await _dispatcher.DispatchAsync(device.DomainEvents);
             device.ClearDomainEvents();
         }
     }

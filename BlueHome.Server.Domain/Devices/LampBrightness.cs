@@ -9,20 +9,28 @@ namespace BlueHome.Server.Domain.Devices
 {
     public readonly struct LampBrightness
     {
+        public const int Min = 1;
+        public const int Max = 100;
+
         public int Value { get; }
 
         public LampBrightness(int value)
         {
-            if (value < 1 || value > 99)
-                throw new DomainException("Brightness must be in range 1–99.");
+            if (value < Min || value > Max)
+                throw new DomainException($"Brightness must be in range {Min}–{Max}.");
 
             Value = value;
         }
 
-        public static implicit operator int(LampBrightness brightness)
-            => brightness.Value;
+        public static LampBrightness From(int value)
+            => new LampBrightness(value);
 
-        public override string ToString()
-            => Value.ToString();
+        public LampBrightness Increase(int step)
+            => new LampBrightness(Math.Min(Value + step, Max));
+
+        public LampBrightness Decrease(int step)
+            => new LampBrightness(Math.Max(Value - step, Min));
+
+        public static implicit operator int(LampBrightness b) => b.Value;
     }
 }

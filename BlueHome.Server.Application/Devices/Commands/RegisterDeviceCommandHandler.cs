@@ -1,5 +1,7 @@
-﻿using BlueHome.Server.Application.Abstractions.Persistence;
+﻿using BlueHome.Server.Application.Abstractions.Auth;
+using BlueHome.Server.Application.Abstractions.Persistence;
 using BlueHome.Server.Application.Devices.DTO;
+using BlueHome.Server.Application.Spaces.Abstractions;
 using BlueHome.Server.Domain.Entities;
 using BlueHome.Server.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -14,24 +16,32 @@ namespace BlueHome.Server.Application.Devices.Commands
     public sealed class RegisterDeviceCommandHandler
     {
         private readonly IBlueHomeDbContext _db;
+        private readonly ICurrentUserService _currentUser;
+        private readonly ISpaceAccessService _access;
 
-        public RegisterDeviceCommandHandler(IBlueHomeDbContext db)
+        public RegisterDeviceCommandHandler(
+            IBlueHomeDbContext db,
+            ICurrentUserService currentUser,
+            ISpaceAccessService access)
         {
             _db = db;
+            _currentUser = currentUser;
+            _access = access;
         }
 
         public async Task<DeviceDto> Handle(
             RegisterDeviceCommand command,
             CancellationToken ct)
         {
-            // проверка Space существует
+            if (!_access.HasAccess(_currentUser.UserId, command.SpaceId))
+                throw new UnauthorizedAccessException("No access to this space");
+
             var spaceExists = await _db.Spaces
                 .AnyAsync(x => x.SpaceId == command.SpaceId, ct);
 
             if (!spaceExists)
                 throw new Exception("Space not found");
 
-            // проверка Location существует
             var locationExists = await _db.Locations
                 .AnyAsync(x => x.LocationId == command.LocationId, ct);
 

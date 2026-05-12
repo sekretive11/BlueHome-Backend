@@ -18,20 +18,16 @@ namespace BlueHome.Server.Infrastructure.Bluetooth.Emulation
         {
             switch (domainEvent)
             {
-                case LampPoweredOnEvent e:
-                    Console.WriteLine($"[BT] Lamp {e.LampId} powered ON");
+                case DevicePoweredOnEvent e:
+                    Console.WriteLine($"[BT] Device {e.DeviceId} ON");
                     break;
 
-                case LampPoweredOffEvent e:
-                    Console.WriteLine($"[BT] Lamp {e.LampId} powered OFF (low power mode)");
+                case DevicePoweredOffEvent e:
+                    Console.WriteLine($"[BT] Device {e.DeviceId} OFF");
                     break;
 
-                case LampBrightnessChangedEvent e:
-                    Console.WriteLine($"[BT] Lamp {e.LampId} brightness set to {e.Brightness}");
-                    break;
-
-                default:
-                    Console.WriteLine("[BT] Unknown domain event");
+                case DeviceBrightnessChangedEvent e:
+                    Console.WriteLine($"[BT] Device {e.DeviceId} brightness {e.Brightness}");
                     break;
             }
         }

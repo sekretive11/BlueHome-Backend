@@ -1,4 +1,5 @@
 ﻿using BlueHome.Server.Application.Abstractions;
+using BlueHome.Server.Application.Abstractions.Auth;
 using BlueHome.Server.Application.Commands;
 using System;
 using System.Collections.Generic;
@@ -11,25 +12,28 @@ namespace BlueHome.Server.Application.CommandHandlers
     public class TurnLampOffHandler
     {
         private readonly IDeviceRuntime _runtime;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly IDomainEventDispatcher _dispatcher;
+        private readonly ICurrentUserService _currentUser;
 
         public TurnLampOffHandler(
             IDeviceRuntime runtime,
-            IEventPublisher eventPublisher)
+            IDomainEventDispatcher dispatcher,
+            ICurrentUserService currentUser)
         {
             _runtime = runtime;
-            _eventPublisher = eventPublisher;
+            _dispatcher = dispatcher;
+            _currentUser = currentUser;
         }
 
-        public async void Handle(TurnLampOffCommand command)
+        public async Task Handle(TurnLampOffCommand command)
         {
             var device = _runtime.GetDevice(command.DeviceId);
 
-            device.PowerOff();
+            device.PowerOff(_currentUser.UserId);
 
             await _runtime.Save(device);
 
-            _eventPublisher.Publish(device.DomainEvents);
+            await _dispatcher.DispatchAsync(device.DomainEvents);
             device.ClearDomainEvents();
         }
     }

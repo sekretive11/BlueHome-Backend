@@ -1,5 +1,7 @@
-﻿using System;
+﻿using BlueHome.Server.Domain.Enums;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +17,9 @@ namespace BlueHome.Server.Domain.Entities
 
         public int SpaceId { get; set; }
         public IoTSpace Space { get; set; } = null!;
+
+        [NotMapped]
+        public SpaceRole Role { get; set; }
 
         public string? Description { get; set; }
         public DateTime CreatedAt { get; set; }

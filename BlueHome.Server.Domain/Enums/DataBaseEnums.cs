@@ -22,4 +22,10 @@ namespace BlueHome.Server.Domain.Enums
         disabled,
         updating
     }
+
+    public enum RoleType
+    {
+        User = 0,
+        Admin = 1
+    }
 }

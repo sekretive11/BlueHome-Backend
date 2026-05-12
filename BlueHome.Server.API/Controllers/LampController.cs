@@ -1,10 +1,12 @@
 ﻿using BlueHome.Server.API.Contracts.Requests;
 using BlueHome.Server.Application.CommandHandlers;
 using BlueHome.Server.Application.Commands;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlueHome.Server.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/lamp")]
     public class LampController : ControllerBase
@@ -25,35 +27,36 @@ namespace BlueHome.Server.API.Controllers
 
         // 🔌 Включить лампу
         [HttpPost("on")]
-        public IActionResult TurnOn([FromBody] TurnLampOnRequest request)
+        public async Task<IActionResult> TurnOn([FromBody] TurnLampOnRequest request)
         {
             var command = new TurnLampOnCommand(request.DeviceId);
-            _turnOnHandler.Handle(command);
+            await _turnOnHandler.Handle(command);
 
             return Ok(new { message = "Lamp turned ON" });
         }
 
         // 🔌 Выключить лампу
         [HttpPost("off")]
-        public IActionResult TurnOff([FromBody] TurnLampOffRequest request)
+        public async Task<IActionResult> TurnOff([FromBody] TurnLampOffRequest request)
         {
             var command = new TurnLampOffCommand(request.DeviceId);
-            _turnOffHandler.Handle(command);
+            await _turnOffHandler.Handle(command);
 
             return Ok(new { message = "Lamp turned OFF" });
         }
 
-        // 💡 Яркость
         [HttpPost("brightness")]
-        public IActionResult SetBrightness([FromBody] SetBrightnessRequest request)
+        public async Task<IActionResult> SetBrightness(
+            [FromBody] SetBrightnessRequest request)
         {
-            if (request.Brightness < 0 || request.Brightness > 100)
-                return BadRequest("Brightness must be 0-100");
+            await _brightnessHandler.Handle(
+                new SetLampBrightnessCommand(
+                    request.DeviceId,
+                    request.Brightness
+                )
+            );
 
-            var command = new SetLampBrightnessCommand(request.DeviceId, request.Brightness);
-            _brightnessHandler.Handle(command);
-
-            return Ok(new { message = "Brightness updated" });
+            return Ok();
         }
     }
 }

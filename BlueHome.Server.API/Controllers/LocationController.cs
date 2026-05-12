@@ -1,9 +1,11 @@
-﻿using BlueHome.Server.Application.Locations.Commands;
-using BlueHome.Server.API.Contracts.Requests;
+﻿using BlueHome.Server.API.Contracts.Requests;
+using BlueHome.Server.Application.Locations.Commands;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlueHome.Server.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/locations")]
     public class LocationsController : ControllerBase

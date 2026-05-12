@@ -1,18 +1,23 @@
 ﻿using BlueHome.Server.API.Contracts.Requests;
+using BlueHome.Server.Application.Abstractions.Auth;
 using BlueHome.Server.Application.Spaces.Commands;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlueHome.Server.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class SpacesController : ControllerBase
     {
         private readonly CreateSpaceCommandHandler _handler;
+        private readonly ICurrentUserService _currentUser;
 
-        public SpacesController(CreateSpaceCommandHandler handler)
+        public SpacesController(CreateSpaceCommandHandler handler, ICurrentUserService currentUser)
         {
             _handler = handler;
+            _currentUser = currentUser;
         }
 
         [HttpPost]
@@ -20,11 +25,9 @@ namespace BlueHome.Server.API.Controllers
             [FromBody] CreateSpaceRequest request,
             CancellationToken cancellationToken)
         {
-            // временно: заглушка пользователя (позже JWT)
-            var userId = Guid.NewGuid();
 
             var command = new CreateSpaceCommand(
-                userId,
+                _currentUser.UserId,
                 request.Name,
                 request.Type
             );

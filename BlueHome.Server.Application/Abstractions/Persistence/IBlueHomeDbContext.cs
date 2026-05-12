@@ -15,6 +15,7 @@ namespace BlueHome.Server.Application.Abstractions.Persistence
         DbSet<Device> Devices { get; }
         DbSet<Location> Locations { get; }
         DbSet<EventLog> EventLogs { get; }
+        DbSet<UserLog> UserLogs { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

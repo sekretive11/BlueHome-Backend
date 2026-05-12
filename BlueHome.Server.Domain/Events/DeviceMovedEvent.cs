@@ -6,17 +6,23 @@ using System.Threading.Tasks;
 
 namespace BlueHome.Server.Domain.Events
 {
-    public sealed class DeviceBrightnessChangedEvent : IDomainEvent
+    public sealed class DeviceMovedEvent : IDomainEvent
     {
         public int DeviceId { get; }
+        public string TargetType { get; }
         public int UserId { get; }
-        public int Brightness { get; }
+        public int TargetId { get; }
         public DateTime OccurredAt { get; }
 
-        public DeviceBrightnessChangedEvent(int deviceId, int brightness, int userId)
+        public DeviceMovedEvent(
+            int deviceId,
+            string targetType,
+            int targetId,
+            int userId)
         {
             DeviceId = deviceId;
-            Brightness = brightness;
+            TargetType = targetType;
+            TargetId = targetId;
             UserId = userId;
             OccurredAt = DateTime.UtcNow;
         }

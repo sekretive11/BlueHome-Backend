@@ -6,5 +6,17 @@ using System.Threading.Tasks;
 
 namespace BlueHome.Server.Domain.Events
 {
-    public record DevicePoweredOffEvent( int DeviceId, DateTime OccurredAt) : IDomainEvent;
+    public sealed class DevicePoweredOffEvent : IDomainEvent
+    {
+        public int DeviceId { get; }
+        public int UserId { get; }
+        public DateTime OccurredAt { get; }
+
+        public DevicePoweredOffEvent(int deviceId, int userId)
+        {
+            DeviceId = deviceId;
+            UserId = userId;
+            OccurredAt = DateTime.UtcNow;
+        }
+    }
 }

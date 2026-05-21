@@ -1,6 +1,7 @@
 ﻿using BlueHome.Server.API.Contracts.Requests;
 using BlueHome.Server.Application.CommandHandlers;
 using BlueHome.Server.Application.Commands;
+using BlueHome.Server.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -56,7 +57,11 @@ namespace BlueHome.Server.API.Controllers
                 )
             );
 
-            return Ok();
+            return Ok(new
+            {
+                deviceId = request.DeviceId,
+                brightness = request.Brightness
+            });
         }
     }
 }

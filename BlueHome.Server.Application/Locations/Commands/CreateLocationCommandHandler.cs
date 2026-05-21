@@ -22,7 +22,7 @@ namespace BlueHome.Server.Application.Locations.Commands
             CreateLocationCommand command,
             CancellationToken ct)
         {
-            var location = Location.Create(command.Name);
+            var location = Location.Create(command.Name, command.SpaceId);
 
             _db.Locations.Add(location);
             await _db.SaveChangesAsync(ct);

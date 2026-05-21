@@ -24,7 +24,7 @@ namespace BlueHome.Server.Domain.Entities
 
         public string DeviceName { get; set; } = null!;
         public DeviceStatus Status { get; set; }
-        public string DeviceType { get; set; } = null!;
+        public DeviceType DeviceType { get; set; }
 
         [NotMapped]
         public LampBrightness? Brightness { get; private set; } = LampBrightness.From(50);
@@ -70,6 +70,9 @@ namespace BlueHome.Server.Domain.Entities
         {
             if (SpaceId == spaceId)
                 return;
+
+            if (Location != null && Location.SpaceId != spaceId)
+                throw new DomainException("Device location does not belong to target space.");
 
             SpaceId = spaceId;
             AddDomainEvent(new DeviceMovedEvent(DeviceId, "space", spaceId, userId));

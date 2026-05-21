@@ -34,6 +34,15 @@ namespace BlueHome.Server.Infrastructure.Persistence
                 typeof(BlueHomeDbContext).Assembly
             );
 
+            modelBuilder.Entity<Device>()
+                .Property(d => d.DeviceType)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Location>()
+                .HasOne(l => l.Space)
+                .WithMany(s => s.Locations)
+                .HasForeignKey(l => l.SpaceId);
+
             base.OnModelCreating(modelBuilder);
         }
     }

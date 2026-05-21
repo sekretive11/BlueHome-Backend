@@ -3,6 +3,9 @@ using BlueHome.Server.Application.CommandHandlers;
 using BlueHome.Server.Application.Commands;
 using BlueHome.Server.Application.Devices.Commands;
 using BlueHome.Server.Domain.Enums;
+using BlueHome.Server.Application.Abstractions.Auth;
+using BlueHome.Server.Application.Devices.Handlers;
+using BlueHome.Server.Application.Devices.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql.Internal.TypeHandlers.NumericHandlers;
@@ -16,11 +19,22 @@ namespace BlueHome.Server.API.Controllers
     {
         private readonly RegisterDeviceCommandHandler _handler;
         private readonly MoveDeviceHandler _moveHandler;
+        private readonly GetUserDevicesQueryHandler _getUserDevicesHandler;
+        private readonly GetDeviceByIdQueryHandler _getDeviceByIdHandler;
+        private readonly ICurrentUserService _currentUser;
 
-        public DevicesController(RegisterDeviceCommandHandler handler, MoveDeviceHandler moveHandler)
+        public DevicesController(
+            RegisterDeviceCommandHandler handler,
+            MoveDeviceHandler moveHandler,
+            GetUserDevicesQueryHandler getUserDevicesHandler,
+            GetDeviceByIdQueryHandler getDeviceByIdHandler,
+            ICurrentUserService currentUser)
         {
             _handler = handler;
             _moveHandler = moveHandler;
+            _getUserDevicesHandler = getUserDevicesHandler;
+            _getDeviceByIdHandler = getDeviceByIdHandler;
+            _currentUser = currentUser;
         }
 
         [HttpPost("register")]
@@ -58,6 +72,26 @@ namespace BlueHome.Server.API.Controllers
             );
 
             return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserDevices(CancellationToken ct)
+        {
+            var result = await _getUserDevicesHandler.Handle(
+                new GetUserDevicesQuery(_currentUser.UserId),
+                ct);
+
+            return Ok(result);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id, CancellationToken ct)
+        {
+            var result = await _getDeviceByIdHandler.Handle(
+                new GetDeviceByIdQuery(id, _currentUser.UserId),
+                ct);
+
+            return Ok(result);
         }
     }
 }

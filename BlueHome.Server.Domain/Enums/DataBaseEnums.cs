@@ -23,9 +23,14 @@ namespace BlueHome.Server.Domain.Enums
         updating
     }
 
-    public enum RoleType
+    public enum DeviceType
     {
-        User = 0,
-        Admin = 1
+        Lamp,
+        Socket,
+        Thermostat,
+        LightSensor,
+        DoorSensor,
+        LeakSensor,
+        Cornise
     }
 }

@@ -1,12 +1,13 @@
 ﻿using BlueHome.Server.Application.Abstractions.Auth;
 using BlueHome.Server.Application.Abstractions.Persistence;
+using BlueHome.Server.Application.Abstractions.Security;
 using BlueHome.Server.Application.Auth.DTO;
 using BlueHome.Server.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -18,11 +19,13 @@ namespace BlueHome.Server.Application.Auth.Commands
     {
         private readonly IBlueHomeDbContext _db;
         private readonly JwtSettings _jwt;
+        private readonly IPasswordHasher _hasher;
 
-        public LoginHandler(IBlueHomeDbContext db, JwtSettings jwt)
+        public LoginHandler(IBlueHomeDbContext db, JwtSettings jwt, IPasswordHasher hasher)
         {
             _db = db;
             _jwt = jwt;
+            _hasher = hasher;
         }
 
         public async Task<LoginResult> Handle(LoginCommand command)
@@ -34,9 +37,19 @@ namespace BlueHome.Server.Application.Auth.Commands
             if (user == null)
                 throw new Exception("User not found");
 
-            // пока без bcrypt (добавим позже)
-            if (user.PasswordUser != command.Password)
+            var isValid =
+                _hasher.IsHashed(user.PasswordUser)
+                    ? _hasher.Verify(command.Password, user.PasswordUser)
+                    : user.PasswordUser == command.Password;
+
+            if (!isValid)
                 throw new Exception("Invalid password");
+
+            if (!_hasher.IsHashed(user.PasswordUser))
+            {
+                user.PasswordUser = _hasher.Hash(user.PasswordUser);
+                await _db.SaveChangesAsync();
+            }
 
             var token = GenerateToken(user);
 

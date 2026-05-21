@@ -1,4 +1,8 @@
 ﻿namespace BlueHome.Server.API.Contracts.Requests
 {
-    public sealed record CreateLocationRequest(string Name);
+    public class CreateLocationRequest
+    {
+        public string Name { get; set; } = null!;
+        public int SpaceId { get; set; }
+    }
 }

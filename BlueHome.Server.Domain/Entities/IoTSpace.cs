@@ -19,6 +19,7 @@ namespace BlueHome.Server.Domain.Entities
 
         public List<Device> Devices { get; set; } = new();
         public List<UserLog> UserLogs { get; set; } = new();
+        public List<Location> Locations { get; set; } = new();
 
         private IoTSpace() { }
 

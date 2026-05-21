@@ -1,12 +1,17 @@
 using BlueHome.Server.Application.Abstractions;
 using BlueHome.Server.Application.Abstractions.Auth;
+using BlueHome.Server.Application.Abstractions.Security;
 using BlueHome.Server.Application.Auth.Commands;
 using BlueHome.Server.Application.CommandHandlers;
 using BlueHome.Server.Application.Devices.Commands;
+using BlueHome.Server.Application.Devices.Handlers;
 using BlueHome.Server.Application.Events;
 using BlueHome.Server.Application.Locations.Commands;
+using BlueHome.Server.Application.Locations.Handlers;
 using BlueHome.Server.Application.Spaces.Abstractions;
 using BlueHome.Server.Application.Spaces.Commands;
+using BlueHome.Server.Application.Spaces.Handlers;
+using BlueHome.Server.Application.Users.Handlers;
 using BlueHome.Server.Domain.Events;
 using BlueHome.Server.Infrastructure.Auth;
 using BlueHome.Server.Infrastructure.DependencyInjection;
@@ -54,6 +59,14 @@ builder.Services.AddScoped<IEventHandler<DevicePoweredOffEvent>, DevicePoweredOf
 builder.Services.AddScoped<IEventHandler<DeviceBrightnessChangedEvent>, DeviceBrightnessChangedAuditHandler>();
 builder.Services.AddScoped<IEventHandler<DeviceMovedEvent>, DeviceMovedAuditHandler>();
 builder.Services.AddScoped<ISpaceAccessService, SpaceAccessService>();
+builder.Services.AddScoped<GetUserSpacesQueryHandler>();
+builder.Services.AddScoped<GetUserDevicesQueryHandler>();
+builder.Services.AddScoped<GetUserLocationsQueryHandler>();
+builder.Services.AddScoped<GetSpaceByIdQueryHandler>();
+builder.Services.AddScoped<GetDeviceByIdQueryHandler>();
+builder.Services.AddScoped<GetLocationByIdQueryHandler>();
+builder.Services.AddScoped<GetUserByIdQueryHandler>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 builder.Services.AddSwaggerGen(c =>
 {

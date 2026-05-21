@@ -48,12 +48,24 @@ namespace BlueHome.Server.Application.Devices.Commands
             if (!locationExists)
                 throw new Exception("Location not found");
 
+            if (!Enum.TryParse<DeviceType>(command.DeviceType, true, out var deviceType))
+                throw new Exception("Invalid device type");
+
+            var location = await _db.Locations
+                 .FirstOrDefaultAsync(x => x.LocationId == command.LocationId, ct);
+
+            if (location == null)
+                throw new Exception("Location not found");
+
+            if (location.SpaceId != command.SpaceId)
+                throw new Exception("Location does not belong to selected space");
+
             var device = new Device
             {
                 SpaceId = command.SpaceId,
                 LocationId = command.LocationId,
                 DeviceName = command.DeviceName,
-                DeviceType = command.DeviceType,
+                DeviceType = deviceType,
                 Status = DeviceStatus.online
             };
 
@@ -63,7 +75,7 @@ namespace BlueHome.Server.Application.Devices.Commands
             return new DeviceDto(
                 device.DeviceId,
                 device.DeviceName,
-                device.DeviceType,
+                device.DeviceType.ToString(),
                 device.SpaceId,
                 device.LocationId
             );

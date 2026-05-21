@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace BlueHome.Server.Application.Locations.Commands
 {
-    public sealed record CreateLocationCommand(string Name);
+    public record CreateLocationCommand(string Name, int SpaceId);
 }

@@ -129,9 +129,13 @@ builder.Services.AddAuthentication("Bearer")
 
 builder.Services.AddAuthorization();
 
-var connectionString =
+/*var connectionString =
     Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");*/
+
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("No connection string");
 
 builder.Services.AddDbContext<BlueHomeDbContext>(options =>
     options.UseNpgsql(connectionString!));

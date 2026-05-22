@@ -129,6 +129,17 @@ builder.Services.AddAuthentication("Bearer")
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 /*var connectionString =
     Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");*/
@@ -148,6 +159,8 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwaggerUI();
 }
 
+
+
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
@@ -159,6 +172,9 @@ app.UseExceptionHandler(errorApp =>
 });
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

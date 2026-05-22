@@ -45,11 +45,11 @@ namespace BlueHome.Server.Application.Auth.Commands
             if (!isValid)
                 throw new Exception("Invalid password");
 
-            if (!_hasher.IsHashed(user.PasswordUser))
+            /*if (!_hasher.IsHashed(user.PasswordUser))
             {
                 user.PasswordUser = _hasher.Hash(user.PasswordUser);
                 await _db.SaveChangesAsync();
-            }
+            }*/
 
             var token = GenerateToken(user);
 

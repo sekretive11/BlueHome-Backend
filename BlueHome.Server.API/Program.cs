@@ -143,6 +143,16 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var error = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+
+        await context.Response.WriteAsync(error?.ToString() ?? "Unknown error");
+    });
+});
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlueHome.Server.Infrastructure.WebSockets.Abstractions
+namespace BlueHome.Server.Application.Abstractions
 {
     public interface IDeviceEventWsPublisher<TEvent>
     {

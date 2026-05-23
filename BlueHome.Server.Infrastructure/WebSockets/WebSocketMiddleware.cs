@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using BlueHome.Server.Application.DTO;
 
 namespace BlueHome.Server.Infrastructure.WebSockets
 {
@@ -25,33 +25,45 @@ namespace BlueHome.Server.Infrastructure.WebSockets
                 return;
             }
 
-            var socket = await context.WebSockets.AcceptWebSocketAsync();
+            var socket = await context.WebSockets.AcceptWebSocketAsync(); // ✅ только тут
 
             int? deviceId = null;
-
             var buffer = new byte[1024 * 4];
 
-            while (socket.State == WebSocketState.Open)
+            try
             {
-                var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
-
-                var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-
-                if (message.Contains("register"))
+                while (socket.State == WebSocketState.Open)
                 {
-                    var idStart = message.IndexOf("deviceId") + 11;
-                    var idEnd = message.IndexOf("}", idStart);
+                    var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
 
-                    var idStr = message.Substring(idStart, idEnd - idStart);
+                    if (result.MessageType == WebSocketMessageType.Close)
+                        break;
 
-                    deviceId = int.Parse(idStr);
+                    var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
-                    manager.Add(deviceId.Value, socket);
+                    var msg = JsonSerializer.Deserialize<WsMessageDTO>(message);
+
+                    if (msg?.Type == "register")
+                    {
+                        deviceId = msg.DeviceId;
+                        if (deviceId.HasValue)
+                            manager.Add(deviceId.Value, socket);
+                    }
                 }
             }
+            finally
+            {
+                if (socket.State == WebSocketState.Open)
+                {
+                    await socket.CloseAsync(
+                        WebSocketCloseStatus.NormalClosure,
+                        "Closing",
+                        CancellationToken.None);
+                }
 
-            if (deviceId.HasValue)
-                manager.Remove(deviceId.Value);
+                if (deviceId.HasValue)
+                    manager.Remove(deviceId.Value);
+            }
         }
     }
 }

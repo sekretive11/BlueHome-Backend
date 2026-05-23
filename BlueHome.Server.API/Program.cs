@@ -22,7 +22,7 @@ using BlueHome.Server.Infrastructure.Persistence.Repositories;
 using BlueHome.Server.Infrastructure.Runtime;
 using BlueHome.Server.Infrastructure.Security;
 using BlueHome.Server.Infrastructure.WebSockets;
-using BlueHome.Server.Infrastructure.WebSockets.Abstractions;
+using BlueHome.Server.Infrastructure.WebSockets.Handlers;
 using BlueHome.Server.Infrastructure.WebSockets.Publishers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
@@ -76,9 +76,6 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddSingleton<DeviceConnectionManager>();
 builder.Services.AddSingleton<DeviceSocketHub>();
 
-builder.Services.AddSingleton<DeviceSocketHub>();
-builder.Services.AddSingleton<DeviceConnectionManager>();
-
 builder.Services.AddScoped<
     IDeviceEventWsPublisher<DevicePoweredOnEvent>,
     DeviceEventWsPublisher>();
@@ -90,6 +87,12 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IDeviceEventWsPublisher<DeviceBrightnessChangedEvent>,
     DeviceEventWsPublisher>();
+
+builder.Services.AddScoped<DeviceWsEventHandler>();
+
+builder.Services.AddScoped<IEventHandler<DevicePoweredOnEvent>, DeviceWsEventHandler>();
+builder.Services.AddScoped<IEventHandler<DevicePoweredOffEvent>, DeviceWsEventHandler>();
+builder.Services.AddScoped<IEventHandler<DeviceBrightnessChangedEvent>, DeviceWsEventHandler>();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -193,15 +196,19 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
-app.UseWebSockets();
-app.UseMiddleware<WebSocketMiddleware>();
-
 app.UseHttpsRedirection();
+
+app.UseWebSockets();
 
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+app.Map("/ws", appBuilder =>
+{
+    appBuilder.UseMiddleware<WebSocketMiddleware>();
+});
 
 app.Run();

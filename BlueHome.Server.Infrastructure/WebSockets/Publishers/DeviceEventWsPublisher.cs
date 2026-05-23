@@ -1,6 +1,5 @@
 ﻿using BlueHome.Server.Application.Abstractions;
 using BlueHome.Server.Domain.Events;
-using BlueHome.Server.Infrastructure.WebSockets.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

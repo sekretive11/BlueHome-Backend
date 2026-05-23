@@ -74,6 +74,16 @@ namespace BlueHome.Server.API.Controllers
             return Ok();
         }
 
+        /*[HttpGet("location/{locationId:int}")]
+        public async Task<IActionResult> GetDevicesByLocation(int locationId, CancellationToken ct)
+        {
+            var result = await //_getUserDevicesHandler.Handle(
+                new //GetUserDevicesQuery(_currentUser.UserId),
+                ct);
+
+            return Ok(result);
+        }*/
+
         [HttpGet]
         public async Task<IActionResult> GetUserDevices(CancellationToken ct)
         {

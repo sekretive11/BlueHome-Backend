@@ -21,6 +21,9 @@ using BlueHome.Server.Infrastructure.Persistence;
 using BlueHome.Server.Infrastructure.Persistence.Repositories;
 using BlueHome.Server.Infrastructure.Runtime;
 using BlueHome.Server.Infrastructure.Security;
+using BlueHome.Server.Infrastructure.WebSockets;
+using BlueHome.Server.Infrastructure.WebSockets.Abstractions;
+using BlueHome.Server.Infrastructure.WebSockets.Publishers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -62,12 +65,30 @@ builder.Services.AddScoped<IEventHandler<DeviceMovedEvent>, DeviceMovedAuditHand
 builder.Services.AddScoped<ISpaceAccessService, SpaceAccessService>();
 builder.Services.AddScoped<GetUserSpacesQueryHandler>();
 builder.Services.AddScoped<GetUserDevicesQueryHandler>();
+builder.Services.AddScoped<GetSpaceLocationsQueryHandler>();
 builder.Services.AddScoped<GetUserLocationsQueryHandler>();
 builder.Services.AddScoped<GetSpaceByIdQueryHandler>();
 builder.Services.AddScoped<GetDeviceByIdQueryHandler>();
 builder.Services.AddScoped<GetLocationByIdQueryHandler>();
 builder.Services.AddScoped<GetUserByIdQueryHandler>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddSingleton<DeviceConnectionManager>();
+builder.Services.AddSingleton<DeviceSocketHub>();
+
+builder.Services.AddSingleton<DeviceSocketHub>();
+builder.Services.AddSingleton<DeviceConnectionManager>();
+
+builder.Services.AddScoped<
+    IDeviceEventWsPublisher<DevicePoweredOnEvent>,
+    DeviceEventWsPublisher>();
+
+builder.Services.AddScoped<
+    IDeviceEventWsPublisher<DevicePoweredOffEvent>,
+    DeviceEventWsPublisher>();
+
+builder.Services.AddScoped<
+    IDeviceEventWsPublisher<DeviceBrightnessChangedEvent>,
+    DeviceEventWsPublisher>();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -170,6 +191,9 @@ app.UseExceptionHandler(errorApp =>
         await context.Response.WriteAsync(error?.ToString() ?? "Unknown error");
     });
 });
+
+app.UseWebSockets();
+app.UseMiddleware<WebSocketMiddleware>();
 
 app.UseHttpsRedirection();
 

@@ -20,6 +20,7 @@ namespace BlueHome.Server.API.Controllers
         private readonly RegisterDeviceCommandHandler _handler;
         private readonly MoveDeviceHandler _moveHandler;
         private readonly GetUserDevicesQueryHandler _getUserDevicesHandler;
+        private readonly GetLocationDevicesQueryHandler _getLocationDevicesHandler;
         private readonly GetDeviceByIdQueryHandler _getDeviceByIdHandler;
         private readonly ICurrentUserService _currentUser;
 
@@ -27,12 +28,14 @@ namespace BlueHome.Server.API.Controllers
             RegisterDeviceCommandHandler handler,
             MoveDeviceHandler moveHandler,
             GetUserDevicesQueryHandler getUserDevicesHandler,
+            GetLocationDevicesQueryHandler getLocationDevicesHandler,
             GetDeviceByIdQueryHandler getDeviceByIdHandler,
             ICurrentUserService currentUser)
         {
             _handler = handler;
             _moveHandler = moveHandler;
             _getUserDevicesHandler = getUserDevicesHandler;
+            _getLocationDevicesHandler = getLocationDevicesHandler;
             _getDeviceByIdHandler = getDeviceByIdHandler;
             _currentUser = currentUser;
         }
@@ -74,15 +77,15 @@ namespace BlueHome.Server.API.Controllers
             return Ok();
         }
 
-        /*[HttpGet("location/{locationId:int}")]
+        [HttpGet("location/{locationId:int}")]
         public async Task<IActionResult> GetDevicesByLocation(int locationId, CancellationToken ct)
         {
-            var result = await //_getUserDevicesHandler.Handle(
-                new //GetUserDevicesQuery(_currentUser.UserId),
+            var result = await _getLocationDevicesHandler.Handle(
+                new GetLocationDevicesQuery(locationId, _currentUser.UserId),
                 ct);
 
             return Ok(result);
-        }*/
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetUserDevices(CancellationToken ct)

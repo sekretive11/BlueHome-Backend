@@ -65,6 +65,7 @@ builder.Services.AddScoped<IEventHandler<DeviceMovedEvent>, DeviceMovedAuditHand
 builder.Services.AddScoped<ISpaceAccessService, SpaceAccessService>();
 builder.Services.AddScoped<GetUserSpacesQueryHandler>();
 builder.Services.AddScoped<GetUserDevicesQueryHandler>();
+builder.Services.AddScoped<GetLocationDevicesQueryHandler>();
 builder.Services.AddScoped<GetSpaceLocationsQueryHandler>();
 builder.Services.AddScoped<GetUserLocationsQueryHandler>();
 builder.Services.AddScoped<GetSpaceByIdQueryHandler>();

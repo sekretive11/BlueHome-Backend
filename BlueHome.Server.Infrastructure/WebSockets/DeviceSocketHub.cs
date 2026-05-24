@@ -20,6 +20,7 @@ namespace BlueHome.Server.Infrastructure.WebSockets
         public async Task SendAsync(int deviceId, object payload)
         {
             var socket = _manager.Get(deviceId);
+            Console.WriteLine($"GET SOCKET for {deviceId} = {(socket != null)}");
 
             if (socket == null || socket.State != WebSocketState.Open)
                 return;

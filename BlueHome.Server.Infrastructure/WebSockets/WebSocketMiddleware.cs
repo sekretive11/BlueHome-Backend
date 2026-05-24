@@ -19,13 +19,15 @@ namespace BlueHome.Server.Infrastructure.WebSockets
 
         public async Task Invoke(HttpContext context, DeviceConnectionManager manager)
         {
+            Console.WriteLine("WS MIDDLEWARE HIT");
+
             if (!context.WebSockets.IsWebSocketRequest)
             {
                 await _next(context);
                 return;
             }
 
-            var socket = await context.WebSockets.AcceptWebSocketAsync(); // ✅ только тут
+            var socket = await context.WebSockets.AcceptWebSocketAsync();
 
             int? deviceId = null;
             var buffer = new byte[1024 * 4];

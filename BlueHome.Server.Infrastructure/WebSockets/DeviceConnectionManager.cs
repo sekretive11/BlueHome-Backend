@@ -16,6 +16,7 @@ namespace BlueHome.Server.Infrastructure.WebSockets
         {
             _connections[deviceId] = socket;
             Console.WriteLine($"REGISTER deviceId={deviceId}");
+            Console.WriteLine($"SOCKET COUNT = {_connections.Count}");
         }
 
         public void Remove(int deviceId)

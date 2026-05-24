@@ -29,6 +29,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Net.WebSockets;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -206,9 +207,37 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.Map("/ws", appBuilder =>
+app.Map("/ws", async context =>
 {
-    appBuilder.UseMiddleware<WebSocketMiddleware>();
+    if (!context.WebSockets.IsWebSocketRequest)
+    {
+        context.Response.StatusCode = 400;
+        return;
+    }
+
+    var socket = await context.WebSockets.AcceptWebSocketAsync();
+
+    Console.WriteLine("WS connected");
+
+    var buffer = new byte[4096];
+
+    while (socket.State == WebSocketState.Open)
+    {
+        var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
+
+        if (result.MessageType == WebSocketMessageType.Close)
+            break;
+
+        var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+
+        Console.WriteLine("WS MESSAGE:", message);
+    }
+
+    await socket.CloseAsync(
+        WebSocketCloseStatus.NormalClosure,
+        "Closing",
+        CancellationToken.None
+    );
 });
 
 app.Run();

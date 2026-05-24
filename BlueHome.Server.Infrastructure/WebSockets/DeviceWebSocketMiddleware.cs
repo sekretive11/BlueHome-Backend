@@ -61,10 +61,14 @@ namespace BlueHome.Server.Infrastructure.WebSockets
 
             manager.Add(deviceId, socket);
 
+            Console.WriteLine($"WS REGISTER deviceId = {deviceId}");
+
             try
             {
                 while (!socket.CloseStatus.HasValue)
                 {
+                    Console.WriteLine($"WS MESSAGE FROM {deviceId}: {msg.Type}");
+
                     var resultMsg = await socket.ReceiveAsync(
                         new ArraySegment<byte>(buffer),
                         CancellationToken.None);

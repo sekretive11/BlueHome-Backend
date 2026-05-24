@@ -38,6 +38,8 @@ namespace BlueHome.Server.Infrastructure.WebSockets
 
             var buffer = Encoding.UTF8.GetBytes(message);
 
+            Console.WriteLine($"Sending WS message to {deviceId}: {message}");
+
             await socket.SendAsync(
                 new ArraySegment<byte>(buffer),
                 WebSocketMessageType.Text,

@@ -40,6 +40,7 @@ namespace BlueHome.Server.Application.CommandHandlers
             await _dispatcher.DispatchAsync(device.DomainEvents);
             device.ClearDomainEvents();
 
+            Console.WriteLine("NOTIFIER CALLED: lamp_on " + command.DeviceId);
             await _notifier.SendLampOn(command.DeviceId);
         }
     }

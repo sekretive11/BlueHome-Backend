@@ -67,7 +67,6 @@ namespace BlueHome.Server.Infrastructure.WebSockets
             {
                 while (!socket.CloseStatus.HasValue)
                 {
-                    Console.WriteLine($"WS MESSAGE FROM {deviceId}: {msg.Type}");
 
                     var resultMsg = await socket.ReceiveAsync(
                         new ArraySegment<byte>(buffer),

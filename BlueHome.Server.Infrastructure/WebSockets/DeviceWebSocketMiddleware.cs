@@ -23,6 +23,12 @@ namespace BlueHome.Server.Infrastructure.WebSockets
             DeviceConnectionManager manager,
             DeviceMessageRouter router)
         {
+            if (context.Request.Path != "/ws/device")
+            {
+                await _next(context);
+                return;
+            }
+
             if (!context.WebSockets.IsWebSocketRequest)
             {
                 await _next(context);

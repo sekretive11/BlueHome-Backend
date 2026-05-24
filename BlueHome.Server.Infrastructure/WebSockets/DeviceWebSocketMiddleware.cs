@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace BlueHome.Server.Infrastructure.WebSockets
@@ -45,7 +46,12 @@ namespace BlueHome.Server.Infrastructure.WebSockets
 
             var json = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
-            var register = System.Text.Json.JsonSerializer.Deserialize<DeviceMessage>(json);
+            var register = JsonSerializer.Deserialize<DeviceMessage>(
+                json,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
             if (register == null || register.Type != "register")
             {

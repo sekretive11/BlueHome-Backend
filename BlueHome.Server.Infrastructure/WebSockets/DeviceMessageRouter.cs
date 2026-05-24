@@ -19,7 +19,12 @@ namespace BlueHome.Server.Infrastructure.WebSockets
 
         public async Task RouteAsync(int deviceId, string rawMessage)
         {
-            var message = JsonSerializer.Deserialize<DeviceMessage>(rawMessage);
+            var message = JsonSerializer.Deserialize<DeviceMessage>(
+                rawMessage,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
             if (message == null)
                 return;

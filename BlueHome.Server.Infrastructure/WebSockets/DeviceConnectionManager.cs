@@ -14,6 +14,7 @@ namespace BlueHome.Server.Infrastructure.WebSockets
 
         public void Add(int deviceId, WebSocket socket)
         {
+            Console.WriteLine($"REGISTERED SOCKET: {deviceId}");
             _connections[deviceId] = socket;
         }
 
@@ -30,11 +31,15 @@ namespace BlueHome.Server.Infrastructure.WebSockets
 
         public async Task SendAsync(int deviceId, string message)
         {
+            Console.WriteLine($"TRY SEND: {deviceId}");
+
             if (!_connections.TryGetValue(deviceId, out var socket))
                 return;
 
             if (socket.State != WebSocketState.Open)
                 return;
+
+            Console.WriteLine($"SOCKET FOUND FOR {deviceId}");
 
             var buffer = Encoding.UTF8.GetBytes(message);
 

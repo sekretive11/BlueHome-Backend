@@ -79,7 +79,7 @@ builder.Services.AddScoped<GetUserByIdQueryHandler>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 builder.Services.AddSingleton<DeviceConnectionManager>();
-builder.Services.AddSingleton<DeviceMessageRouter>();
+builder.Services.AddScoped<DeviceMessageRouter>();
 builder.Services.AddScoped<IDeviceNotifier, DeviceWebSocketNotifier>();
 
 builder.Services.AddSwaggerGen(c =>

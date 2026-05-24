@@ -1,9 +1,11 @@
-﻿using System.Net.WebSockets;
+﻿using BlueHome.Server.Application.DTO;
+using BlueHome.Server.Infrastructure.WebSockets;
+using Microsoft.AspNetCore.Http;
+using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
-using BlueHome.Server.Application.DTO;
 
-namespace BlueHome.Server.Infrastructure.WebSockets;
+namespace BlueHome.Server.API.Middleware;
 
 public class WebSocketMiddleware
 {

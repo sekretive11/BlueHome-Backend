@@ -24,6 +24,7 @@ using BlueHome.Server.Infrastructure.Security;
 using BlueHome.Server.Infrastructure.WebSockets;
 using BlueHome.Server.Infrastructure.WebSockets.Handlers;
 using BlueHome.Server.Infrastructure.WebSockets.Publishers;
+using BlueHome.Server.API.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;

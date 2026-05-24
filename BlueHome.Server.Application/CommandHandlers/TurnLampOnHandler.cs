@@ -1,5 +1,6 @@
 ﻿using BlueHome.Server.Application.Abstractions;
 using BlueHome.Server.Application.Abstractions.Auth;
+using BlueHome.Server.Application.Abstractions.WebSockets;
 using BlueHome.Server.Application.Commands;
 using System;
 using System.Collections.Generic;
@@ -14,15 +15,18 @@ namespace BlueHome.Server.Application.CommandHandlers
         private readonly IDeviceRuntime _runtime;
         private readonly IDomainEventDispatcher _dispatcher;
         private readonly ICurrentUserService _currentUser;
+        private readonly IDeviceNotifier _notifier;
 
         public TurnLampOnHandler(
             IDeviceRuntime runtime,
             IDomainEventDispatcher dispatcher,
-            ICurrentUserService currentUser)
+            ICurrentUserService currentUser,
+            IDeviceNotifier notifier)
         {
             _runtime = runtime;
             _dispatcher = dispatcher;
             _currentUser = currentUser;
+            _notifier = notifier;
         }
 
         public async Task Handle(TurnLampOnCommand command)
@@ -35,6 +39,8 @@ namespace BlueHome.Server.Application.CommandHandlers
 
             await _dispatcher.DispatchAsync(device.DomainEvents);
             device.ClearDomainEvents();
+
+            await _notifier.SendLampOn(command.DeviceId);
         }
     }
 }

@@ -1,10 +1,12 @@
 using BlueHome.Server.Application.Abstractions;
 using BlueHome.Server.Application.Abstractions.Auth;
 using BlueHome.Server.Application.Abstractions.Security;
+using BlueHome.Server.Application.Abstractions.WebSockets;
 using BlueHome.Server.Application.Auth.Commands;
 using BlueHome.Server.Application.CommandHandlers;
 using BlueHome.Server.Application.Devices.Commands;
 using BlueHome.Server.Application.Devices.Handlers;
+using BlueHome.Server.Application.DTO;
 using BlueHome.Server.Application.Events;
 using BlueHome.Server.Application.Locations.Commands;
 using BlueHome.Server.Application.Locations.Handlers;
@@ -22,16 +24,16 @@ using BlueHome.Server.Infrastructure.Persistence.Repositories;
 using BlueHome.Server.Infrastructure.Runtime;
 using BlueHome.Server.Infrastructure.Security;
 using BlueHome.Server.Infrastructure.WebSockets;
-using BlueHome.Server.Infrastructure.WebSockets.Handlers;
-using BlueHome.Server.Infrastructure.WebSockets.Publishers;
-using BlueHome.Server.API.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.WebSockets;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,26 +77,10 @@ builder.Services.AddScoped<GetDeviceByIdQueryHandler>();
 builder.Services.AddScoped<GetLocationByIdQueryHandler>();
 builder.Services.AddScoped<GetUserByIdQueryHandler>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
 builder.Services.AddSingleton<DeviceConnectionManager>();
-builder.Services.AddSingleton<DeviceSocketHub>();
-
-builder.Services.AddScoped<
-    IDeviceEventWsPublisher<DevicePoweredOnEvent>,
-    DeviceEventWsPublisher>();
-
-builder.Services.AddScoped<
-    IDeviceEventWsPublisher<DevicePoweredOffEvent>,
-    DeviceEventWsPublisher>();
-
-builder.Services.AddScoped<
-    IDeviceEventWsPublisher<DeviceBrightnessChangedEvent>,
-    DeviceEventWsPublisher>();
-
-builder.Services.AddScoped<DeviceWsEventHandler>();
-
-builder.Services.AddScoped<IDomainEventHandler<DevicePoweredOnEvent>, DeviceWsEventHandler>();
-builder.Services.AddScoped<IDomainEventHandler<DevicePoweredOffEvent>, DeviceWsEventHandler>();
-builder.Services.AddScoped<IDomainEventHandler<DeviceBrightnessChangedEvent>, DeviceWsEventHandler>();
+builder.Services.AddScoped<DeviceMessageRouter>();
+builder.Services.AddScoped<IDeviceNotifier, DeviceWebSocketNotifier>();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -208,6 +194,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.UseMiddleware<WebSocketMiddleware>();
+app.UseMiddleware<DeviceWebSocketMiddleware>();
 
 app.Run();

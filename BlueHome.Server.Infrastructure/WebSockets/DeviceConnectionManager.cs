@@ -1,35 +1,48 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.WebSockets;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BlueHome.Server.Infrastructure.WebSockets;
-
-public class DeviceConnectionManager
+namespace BlueHome.Server.Infrastructure.WebSockets
 {
-    private readonly ConcurrentDictionary<int, WebSocket> _connections = new();
-
-    public void Add(int deviceId, WebSocket socket)
+    public class DeviceConnectionManager
     {
-        _connections[deviceId] = socket;
+        private readonly ConcurrentDictionary<int, WebSocket> _connections = new();
 
-        Console.WriteLine($"[WS] ADD device={deviceId}");
-        Console.WriteLine($"[WS] COUNT={_connections.Count}");
-    }
+        public void Add(int deviceId, WebSocket socket)
+        {
+            _connections[deviceId] = socket;
+        }
 
-    public void Remove(int deviceId)
-    {
-        _connections.TryRemove(deviceId, out _);
+        public void Remove(int deviceId)
+        {
+            _connections.TryRemove(deviceId, out _);
+        }
 
-        Console.WriteLine($"[WS] REMOVE device={deviceId}");
-    }
+        public WebSocket? Get(int deviceId)
+        {
+            _connections.TryGetValue(deviceId, out var socket);
+            return socket;
+        }
 
-    public WebSocket? Get(int deviceId)
-    {
-        _connections.TryGetValue(deviceId, out var socket);
+        public async Task SendAsync(int deviceId, string message)
+        {
+            if (!_connections.TryGetValue(deviceId, out var socket))
+                return;
 
-        var alive = socket != null && socket.State == WebSocketState.Open;
+            if (socket.State != WebSocketState.Open)
+                return;
 
-        Console.WriteLine($"[WS] GET device={deviceId} alive={alive}");
+            var buffer = Encoding.UTF8.GetBytes(message);
 
-        return alive ? socket : null;
+            await socket.SendAsync(
+                new ArraySegment<byte>(buffer),
+                WebSocketMessageType.Text,
+                true,
+                CancellationToken.None);
+        }
     }
 }

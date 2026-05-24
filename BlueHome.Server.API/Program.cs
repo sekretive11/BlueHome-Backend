@@ -90,9 +90,9 @@ builder.Services.AddScoped<
 
 builder.Services.AddScoped<DeviceWsEventHandler>();
 
-builder.Services.AddScoped<IEventHandler<DevicePoweredOnEvent>, DeviceWsEventHandler>();
-builder.Services.AddScoped<IEventHandler<DevicePoweredOffEvent>, DeviceWsEventHandler>();
-builder.Services.AddScoped<IEventHandler<DeviceBrightnessChangedEvent>, DeviceWsEventHandler>();
+builder.Services.AddScoped<IDomainEventHandler<DevicePoweredOnEvent>, DeviceWsEventHandler>();
+builder.Services.AddScoped<IDomainEventHandler<DevicePoweredOffEvent>, DeviceWsEventHandler>();
+builder.Services.AddScoped<IDomainEventHandler<DeviceBrightnessChangedEvent>, DeviceWsEventHandler>();
 
 builder.Services.AddSwaggerGen(c =>
 {

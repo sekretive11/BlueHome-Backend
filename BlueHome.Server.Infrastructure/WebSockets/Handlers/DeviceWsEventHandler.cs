@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace BlueHome.Server.Infrastructure.WebSockets.Handlers
 {
     public class DeviceWsEventHandler :
-        IEventHandler<DevicePoweredOnEvent>,
-        IEventHandler<DevicePoweredOffEvent>,
-        IEventHandler<DeviceBrightnessChangedEvent>
+        IDomainEventHandler<DevicePoweredOnEvent>,
+        IDomainEventHandler<DevicePoweredOffEvent>,
+        IDomainEventHandler<DeviceBrightnessChangedEvent>
     {
         private readonly IDeviceEventWsPublisher<DevicePoweredOnEvent> _onPublisher;
         private readonly IDeviceEventWsPublisher<DevicePoweredOffEvent> _offPublisher;
@@ -27,17 +27,18 @@ namespace BlueHome.Server.Infrastructure.WebSockets.Handlers
             _brightnessPublisher = brightnessPublisher;
         }
 
-        public Task Handle(DevicePoweredOnEvent e)
+        public Task HandleAsync(DevicePoweredOnEvent e)
         {
+            Console.WriteLine("WS HANDLER → DevicePoweredOnEvent");
             return _onPublisher.Publish(e);
         }
 
-        public Task Handle(DevicePoweredOffEvent e)
+        public Task HandleAsync(DevicePoweredOffEvent e)
         {
             return _offPublisher.Publish(e);
         }
 
-        public Task Handle(DeviceBrightnessChangedEvent e)
+        public Task HandleAsync(DeviceBrightnessChangedEvent e)
         {
             return _brightnessPublisher.Publish(e);
         }

@@ -42,7 +42,16 @@ namespace BlueHome.Server.Infrastructure.Runtime
             session.MarkDirty();
             session.Touch();
 
-            _db.Devices.Update(device);
+            var dbDevice = await _db.Devices
+                .FirstOrDefaultAsync(x => x.DeviceId == device.DeviceId);
+
+            if (dbDevice == null)
+                throw new InvalidOperationException("Device not found");
+
+            dbDevice.Status = device.Status;
+            dbDevice.SpaceId = device.SpaceId;
+            dbDevice.LocationId = device.LocationId;
+
             await _db.SaveChangesAsync();
         }
 

@@ -26,7 +26,6 @@ namespace BlueHome.Server.Infrastructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // PostgreSQL enums
             modelBuilder.HasPostgresEnum<SpaceStatus>();
             modelBuilder.HasPostgresEnum<DeviceStatus>();
 

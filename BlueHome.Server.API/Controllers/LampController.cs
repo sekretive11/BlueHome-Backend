@@ -33,6 +33,8 @@ namespace BlueHome.Server.API.Controllers
             var command = new TurnLampOnCommand(request.DeviceId);
             await _turnOnHandler.Handle(command);
 
+            Console.WriteLine("API: lamp/on called");
+
             return Ok(new { message = "Lamp turned ON" });
         }
 

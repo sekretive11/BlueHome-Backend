@@ -38,6 +38,8 @@ namespace BlueHome.Server.Application.CommandHandlers
             var events = device.DomainEvents.ToList();
 
             await _dispatcher.DispatchAsync(events);
+
+            Console.WriteLine("HANDLER: TurnLampOn");
             device.ClearDomainEvents();
         }
     }

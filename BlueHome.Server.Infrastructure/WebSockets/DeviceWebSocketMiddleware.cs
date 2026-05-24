@@ -79,7 +79,14 @@ namespace BlueHome.Server.Infrastructure.WebSockets
                         CancellationToken.None);
 
                     if (resultMsg.MessageType == WebSocketMessageType.Close)
+                    {
+                        await socket.CloseAsync(
+                            WebSocketCloseStatus.NormalClosure,
+                            "Client closed",
+                            CancellationToken.None);
+
                         break;
+                    }
 
                     var msg = Encoding.UTF8.GetString(buffer, 0, resultMsg.Count);
 

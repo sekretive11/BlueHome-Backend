@@ -1,4 +1,5 @@
-﻿using BlueHome.Server.Infrastructure.WebSockets.Models;
+﻿using BlueHome.Server.Application.Abstractions.WebSockets;
+using BlueHome.Server.Infrastructure.WebSockets.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,20 @@ namespace BlueHome.Server.Infrastructure.WebSockets
     public class DeviceMessageRouter
     {
         private readonly DeviceConnectionManager _manager;
+        private readonly IDeviceNotifier _notifier;
 
-        public DeviceMessageRouter(DeviceConnectionManager manager)
+        public DeviceMessageRouter(
+            DeviceConnectionManager manager,
+            IDeviceNotifier notifier)
         {
             _manager = manager;
+            _notifier = notifier;
+        }
+
+        private async Task Send(int deviceId, object payload)
+        {
+            var json = JsonSerializer.Serialize(payload);
+            await _manager.SendAsync(deviceId, json);
         }
 
         public async Task RouteAsync(int deviceId, string rawMessage)
@@ -32,13 +43,31 @@ namespace BlueHome.Server.Infrastructure.WebSockets
             switch (message.Type)
             {
                 case "register":
+                {
+                    Console.WriteLine($"DEVICE REGISTERED VIA ROUTER: {deviceId}");
+
+                    await Send(deviceId, new
+                    {
+                        type = "registered",
+                        deviceId
+                    });
+
                     break;
+                }
 
                 case "state":
-                    break;
-            }
+                {
+                    Console.WriteLine($"STATE UPDATE FROM DEVICE {deviceId}: {message.Value}");
 
-            await Task.CompletedTask;
+                    break;
+                }
+
+                case "ping":
+                {
+                    await Send(deviceId, new { type = "pong" });
+                    break;
+                }
+            }
         }
     }
 }

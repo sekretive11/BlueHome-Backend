@@ -27,6 +27,8 @@ namespace BlueHome.Server.Infrastructure.WebSockets
             var json = JsonSerializer.Serialize(payload);
             var bytes = Encoding.UTF8.GetBytes(json);
 
+            Console.WriteLine($"WS SEND → device {deviceId}");
+
             await socket.SendAsync(
                 bytes,
                 WebSocketMessageType.Text,

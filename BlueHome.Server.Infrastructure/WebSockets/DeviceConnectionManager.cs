@@ -15,6 +15,7 @@ namespace BlueHome.Server.Infrastructure.WebSockets
         public void Add(int deviceId, WebSocket socket)
         {
             _connections[deviceId] = socket;
+            Console.WriteLine($"REGISTER deviceId={deviceId}");
         }
 
         public void Remove(int deviceId)

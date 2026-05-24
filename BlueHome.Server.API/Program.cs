@@ -207,9 +207,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.Map("/ws", appBuilder =>
-{
-    appBuilder.UseMiddleware<WebSocketMiddleware>();
-});
+app.UseMiddleware<WebSocketMiddleware>();
 
 app.Run();

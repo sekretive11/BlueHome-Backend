@@ -1,71 +1,87 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using BlueHome.Server.Application.DTO;
 
-namespace BlueHome.Server.Infrastructure.WebSockets
-{
-    public class WebSocketMiddleware
-    {
-        private readonly RequestDelegate _next;
+namespace BlueHome.Server.Infrastructure.WebSockets;
 
-        public WebSocketMiddleware(RequestDelegate next)
+public class WebSocketMiddleware
+{
+    private readonly RequestDelegate _next;
+
+    public WebSocketMiddleware(RequestDelegate next)
+    {
+        _next = next;
+    }
+
+    public async Task Invoke(HttpContext context, DeviceConnectionManager manager)
+    {
+        if (context.Request.Path != "/ws")
         {
-            _next = next;
+            await _next(context);
+            return;
         }
 
-        public async Task Invoke(HttpContext context, DeviceConnectionManager manager)
+        if (!context.WebSockets.IsWebSocketRequest)
         {
-            Console.WriteLine("WS MIDDLEWARE HIT");
+            context.Response.StatusCode = 400;
+            return;
+        }
 
-            if (!context.WebSockets.IsWebSocketRequest)
+        Console.WriteLine("[WS] CONNECTION INIT");
+
+        using var socket = await context.WebSockets.AcceptWebSocketAsync();
+
+        int? deviceId = null;
+        var buffer = new byte[4096];
+
+        try
+        {
+            while (socket.State == WebSocketState.Open)
             {
-                await _next(context);
-                return;
-            }
+                var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
 
-            var socket = await context.WebSockets.AcceptWebSocketAsync();
-
-            int? deviceId = null;
-            var buffer = new byte[1024 * 4];
-
-            try
-            {
-                while (socket.State == WebSocketState.Open)
+                if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
-
-                    if (result.MessageType == WebSocketMessageType.Close)
-                        break;
-
-                    var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-
-                    var msg = JsonSerializer.Deserialize<WsMessageDTO>(message);
-
-                    if (msg?.Type == "register")
-                    {
-                        deviceId = msg.DeviceId;
-                        if (deviceId.HasValue)
-                            manager.Add(deviceId.Value, socket);
-                    }
-                }
-            }
-            finally
-            {
-                if (socket.State == WebSocketState.Open)
-                {
-                    await socket.CloseAsync(
-                        WebSocketCloseStatus.NormalClosure,
-                        "Closing",
-                        CancellationToken.None);
+                    Console.WriteLine("[WS] CLIENT CLOSED CONNECTION");
+                    break;
                 }
 
-                if (deviceId.HasValue)
-                    manager.Remove(deviceId.Value);
+                var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+
+                Console.WriteLine($"[WS] MSG {message}");
+
+                var msg = JsonSerializer.Deserialize<WsMessageDTO>(message);
+
+                if (msg?.Type == "register")
+                {
+                    deviceId = msg.DeviceId;
+
+                    Console.WriteLine($"[WS] REGISTER device={deviceId}");
+
+                    manager.Add(deviceId.Value, socket);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[WS] ERROR {ex.Message}");
+        }
+        finally
+        {
+            if (deviceId.HasValue)
+                manager.Remove(deviceId.Value);
+
+            if (socket.State == WebSocketState.Open)
+            {
+                await socket.CloseAsync(
+                    WebSocketCloseStatus.NormalClosure,
+                    "closing",
+                    CancellationToken.None
+                );
+            }
+
+            Console.WriteLine("[WS] DISCONNECTED");
         }
     }
 }

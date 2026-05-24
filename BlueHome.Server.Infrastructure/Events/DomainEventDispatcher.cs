@@ -20,8 +20,11 @@ namespace BlueHome.Server.Infrastructure.Events
 
         public async Task DispatchAsync(IEnumerable<IDomainEvent> events)
         {
+            Console.WriteLine("DISPATCH CALLED");
+
             foreach (var domainEvent in events)
             {
+                Console.WriteLine($"EVENT: {domainEvent.GetType().Name}");
 
                 var eventType = domainEvent.GetType();
                 var handlerType = typeof(IDomainEventHandler<>).MakeGenericType(eventType);

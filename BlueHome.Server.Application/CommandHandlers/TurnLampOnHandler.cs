@@ -31,9 +31,13 @@ namespace BlueHome.Server.Application.CommandHandlers
 
             device.PowerOn(_currentUser.UserId);
 
+            Console.WriteLine($"DOMAIN EVENTS COUNT: {device.DomainEvents.Count}");
+
             await _runtime.Save(device);
 
-            await _dispatcher.DispatchAsync(device.DomainEvents);
+            var events = device.DomainEvents.ToList();
+
+            await _dispatcher.DispatchAsync(events);
             device.ClearDomainEvents();
         }
     }

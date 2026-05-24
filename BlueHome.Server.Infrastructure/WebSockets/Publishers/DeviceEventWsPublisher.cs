@@ -22,6 +22,8 @@ namespace BlueHome.Server.Infrastructure.WebSockets.Publishers
 
         public async Task Publish(DevicePoweredOnEvent e)
         {
+            Console.WriteLine("WS PUBLISHER → ON");
+
             await _hub.SendAsync(e.DeviceId, new
             {
                 type = "device_on",
@@ -44,6 +46,7 @@ namespace BlueHome.Server.Infrastructure.WebSockets.Publishers
 
         public async Task Publish(DeviceBrightnessChangedEvent e)
         {
+
             await _hub.SendAsync(e.DeviceId, new
             {
                 type = "brightness_changed",
